@@ -6,82 +6,108 @@ Created on Tue May  8 09:36:34 2018
 """
 
 import pygame
-from pygame.locals import *
+from os import path
+from random import randrange
+import random
 
-#inpirado em https://www.youtube.com/watch?v=ccpVi7DRNF8
-screenDimension=(1000,700)
-screen=pygame.display.set_mode(screenDimension,0,32)
 
-player=pygame.image.load("imagens/personagem.jpeg")
-keys=[False,False,False,False]
-playerpos=[200,200]
-velocidade=10
-out=True
+#======================= CLASSES ===========================
+class Personagem (pygame.sprite.Sprite):
+    
+    def __init__(self, arquivo_imagem):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(arquivo_imagem)
+        self.rect = self.image.get_rect()
+        self.rect.x = 150
+        self.rect.y = 150
+        self.vx = 0
+        
+    def move (self):
+        self.vx = 0 
+        self.vy = 0
+        keystate = pygame.key.get_pressed()
+        
+        #### MOVIMENTO DA NAVE ####
+        # x^2 + x^2 = 25 ---- x^2 =12.5 ---- x = 12.5 ** (1/2)
+        if keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT] and not\
+        keystate[pygame.K_UP] and not keystate[pygame.K_DOWN]:
+            self.vx = -(12.5 ** (1/2))
+            self.vy = -(12.5 ** (1/2))
+        if keystate[pygame.K_RIGHT] and not keystate[pygame.K_LEFT] and not\
+        keystate[pygame.K_UP] and not keystate[pygame.K_DOWN]:
+            self.vx = (12.5 ** (1/2))
+            self.vy = (12.5 ** (1/2))
+        if keystate[pygame.K_UP] and not keystate[pygame.K_DOWN] and not\
+        keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
+            self.vx = (12.5 ** (1/2))
+            self.vy = -(12.5 ** (1/2))
+        if keystate[pygame.K_DOWN] and not keystate[pygame.K_UP] and not\
+        keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
+            self.vx = -(12.5 ** (1/2))
+            self.vy = (12.5 ** (1/2))
+        
+        #### OUTROS MOVIMENTOS ####
+        if keystate[pygame.K_LEFT] and keystate[pygame.K_DOWN]:
+            self.vy = -5
+        if keystate[pygame.K_LEFT] and keystate[pygame.K_UP]:
+            self.vy = -5
+        if keystate[pygame.K_RIGHT] and keystate[pygame.K_DOWN]:
+            self.vx = 5
+        if keystate[pygame.K_RIGHT] and keystate[pygame.K_UP]:
+            self.vx = 5
+        self.rect.x += self.vx
+        self.rect.y += self.vy
+        
+        
+#===================== FUNÇÕES =============================
+        
+def sair ():
+    pygame.QUIT()
+    quit()
+        
+def loop ():
+
+    
+    Game = True
+
+    tela.blit(fundo, (0,0))
+    
+    while Game:
+        relogio.tick(100)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()       
+                
+        pressed_keys = pygame.key.get_pressed()
+        
+        if pressed_keys[pygame.K_ESCAPE]:
+            Game = False
+            
+        personagem.move()
+        
+        tudo.draw(tela)
+        pygame.display.flip()
+                    
+        
+        
+#===================== INÍCIO ======================
+pygame.init()
+
+tela=pygame.display.set_mode((1000, 700), 0, 32)
+
+pygame.display.set_caption('STARSHIPS')
+
 relogio = pygame.time.Clock()
-x=0
-y=0
-while out:
-    fundo = pygame.image.load("imagens/fundo.png").convert()
-    
-    tempo = relogio.tick(100)
-    
-    
-    
-    screen.blit(player,playerpos)
-    pygame.display.flip()
-    screen.fill(0)
-    ponto1=[10,510]
-    ponto2=[1250,-630]
-    ponto3=[1500,-490]
-    ponto4=[250,650]
-    relx=x%fundo.get_rect().width
-    #pygame.draw.polygon(screen,(0,255,0),(ponto1,ponto2,ponto3,ponto4,ponto1))
 
-    screen.blit(fundo, (relx-fundo.get_rect().width, y))
-    if relx<screenDimension[0]:
-        screen.blit(fundo, (relx,0))
-    #pygame.draw.line(screen,(170,150,0),(ponto1[0]-1,ponto1[1]+20),(ponto4[0],ponto4[1]+20),42)
-    #pygame.draw.line(screen,(100,80,0),(ponto4[0],ponto4[1]+20),(ponto3[0]-1,ponto3[1]+20),42)
+personagem_group = pygame.sprite.Group()
+tudo = pygame.sprite.Group()
     
-    for event in pygame.event.get():
-        if event.type ==pygame.KEYDOWN:
-            if event.key==pygame.locals.K_w:
-                keys[0]=True
-                keys[3]=True
-            if event.key==pygame.locals.K_s:
-                keys[1]=True
-                keys[2]=True
-            if event.key==pygame.locals.K_a:
-                keys[2]=True
-                keys[0]=True
-            if event.key==pygame.locals.K_d:
-                keys[3]=True
-                keys[1]=True
-        if event.type==pygame.locals.QUIT:
-                out=False
-        if event.type ==pygame.KEYUP:
-            if event.key==pygame.locals.K_w:
-                keys[0]=False
-                keys[3]=False
-            if event.key==pygame.locals.K_s:
-                keys[1]=False
-                keys[2]=False
-            if event.key==pygame.locals.K_a:
-                keys[2]=False
-                keys[0]=False
-            if event.key==pygame.locals.K_d:
-                keys[3]=False
-                keys[1]=False
-      
-    if keys[0]:
-        playerpos[1]-=velocidade
-    if keys[1]:
-        playerpos[1]+=velocidade
-    if keys[2]:
-        playerpos[0]-=velocidade
-    if keys[3]:
-        playerpos[0]+=velocidade
-    x-=5
-    y+=0
-    
-pygame.display.quit()
+fundo = pygame.image.load("imagens/fundo.png").convert()
+
+personagem =  Personagem("imagens/personagem.png")
+personagem_group.add(personagem)
+tudo.add(personagem)
+
+
+loop()
