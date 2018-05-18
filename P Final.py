@@ -7,17 +7,8 @@ Created on Tue May  8 09:36:34 2018
 
 
 import pygame
-from pygame import font
 
 #======================= CLASSES ===========================
-def score(score):
-    largeText = pygame.font.SysFont("None", 50)
-    banana = largeText.render("score: "+str(score),0,(255,255,255))
-    tela.blit(banana,(0,0))
-    pygame.display.update()
-
-
-    
 class Personagem (pygame.sprite.Sprite):
     
     def __init__(self, arquivo_imagem):
@@ -78,7 +69,6 @@ class Personagem (pygame.sprite.Sprite):
         tiro = Tiros('imagens/tiro_azul.png', self.rect.centerx, self.rect.y)
         tudo.add(tiro)
         tiros_group.add(tiro)
-        
         
 
 class Tiros(pygame.sprite.Sprite):
@@ -150,10 +140,8 @@ def loop ():
 
     y = 0
     Game = True
-    pygame.mixer.music.play(-1)
 
     while Game:
-       
         
         relogio.tick(100)
     
@@ -166,13 +154,9 @@ def loop ():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:            
                 Game = False
-                pygame.mixer.music.stop()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     personagem.Tiro(tudo, tiros_group)
-        
-        #####PONTUACAO#####
-        score(int(pygame.time.get_ticks()/1000))
 
         ##### MOVIMENTO DA TELA  #####
         rel_y = y % fundo.get_rect().height
@@ -186,6 +170,8 @@ def loop ():
         
         tudo.draw(tela)
         pygame.display.flip()
+       
+
 #https://pythonprogramming.net/adding-sounds-music-pygame/  --> Menu
         
 def text_objects(texto, fonte):
@@ -250,8 +236,6 @@ def menu():
         
 #===================== INÍCIO ======================
 pygame.init()
-
-pygame.mixer.music.load("sons/musica.mp3")
 
 largura_tela = 1000
 altura_tela = 700
