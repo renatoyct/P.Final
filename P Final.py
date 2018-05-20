@@ -2,7 +2,7 @@
 """
 Created on Tue May  8 09:36:34 2018
 
-@author: Pedro Perri
+@author: Arthur Farsky, Pedro Perri and Renato Tajima
 """
 
 import pygame
