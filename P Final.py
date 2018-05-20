@@ -5,16 +5,9 @@ Created on Tue May  8 09:36:34 2018
 @author: Pedro Perri
 """
 
-
 import pygame
 
 #======================= CLASSES ===========================
-
-def score(score):
-    largeText = pygame.font.SysFont("None", 50)
-    banana = largeText.render("score: "+str(score),0,(255,255,255))
-    tela.blit(banana,(0,0))
-    pygame.display.update()
 
 
 class Personagem (pygame.sprite.Sprite):
@@ -43,7 +36,7 @@ class Personagem (pygame.sprite.Sprite):
 #### Nave movendo para a diagonal direita baixa ####
         if keystate[pygame.K_RIGHT] and not keystate[pygame.K_LEFT] and not\
         keystate[pygame.K_UP] and not keystate[pygame.K_DOWN]:
-            self.vx = 4
+            self.vx = 6
             self.vy = 3.5
 #### Nave movendo para a diagonal direita alta ####
         if keystate[pygame.K_UP] and not keystate[pygame.K_DOWN] and not\
@@ -53,7 +46,7 @@ class Personagem (pygame.sprite.Sprite):
 #### Nave movendo para a diagonal esquerda baixa ####
         if keystate[pygame.K_DOWN] and not keystate[pygame.K_UP] and not\
         keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
-            self.vx = -4
+            self.vx = -6
             self.vy = 3.5
         
 #### OUTROS MOVIMENTOS ####
@@ -88,7 +81,7 @@ class Personagem (pygame.sprite.Sprite):
             self.rect.top = 5
             
     def Tiro(self, tudo, tiros_group):
-        tiro = Tiros('imagens/tiro_azul.png', self.rect.top - 15, self.rect.centerx + 50)
+        tiro = Tiros('imagens/tiro_azul.gif', self.rect.top - 15, self.rect.centerx + 50)
         tudo.add(tiro)
         tiros_group.add(tiro)
         
@@ -101,8 +94,8 @@ class Tiros(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.top = pos_y
         self.rect.centerx = pos_x
-        self.vy = -3.5
-        self.vx = 6
+        self.vy = -7
+        self.vx = 10
         
     def update(self):
         self.rect.y += self.vy
@@ -134,7 +127,8 @@ bright_purple = (255, 0, 255)
 
 #=============== CONFIGURAÇÕES DA TELA ===========
 largura_tela = 1000
-altura_tela = 700     
+altura_tela = 700
+FPS = 100     
 #================ BOTÕES ===============
 
 "BOTÃO VERDE"
@@ -145,18 +139,37 @@ h_green = 50
     
 "BOTÃO VERMELHO"
 x_red = largura_tela/2 - 170
-y_red = altura_tela/2 + 100
+y_red = altura_tela/2 + 200
 w_red = 350
 h_red = 50
         
-#CARACTERÍSTICAS DO BOTÃO AZUL (X, Y, W, H)
-#x_blue = largura_tela/2 - 170
-#y_blue = altura_tela/2 + 200
-#w_blue = 350
-#h_blue = 50      
+'CARACTERÍSTICAS DO BOTÃO AZUL (X, Y, W, H)'
+x_blue = largura_tela/2 - 170
+y_blue = altura_tela/2 + 100
+w_blue = 350
+h_blue = 50      
 
 #===================== FUNÇÕES =============================     
     
+#### Função que gera a pontuação
+def score(score):
+    largeText = pygame.font.SysFont("None", 50)
+    banana = largeText.render("score: "+str(score),0,(255,255,255))
+    tela.blit(banana,(0,0))
+    pygame.display.update()
+    
+#### Função das letras nos botões ####
+def mensagem(msg, x, y, tamanho):
+    
+    def text_objects(texto, fonte):
+        pygame.font.get_fonts()
+        textSurface = fonte.render(texto, True, white)
+        return textSurface, textSurface.get_rect()
+    
+    smallText = pygame.font.SysFont("rockwellcondensed", tamanho)
+    textSurf, textRect = text_objects(msg, smallText)
+    textRect.center = (x, y)
+    tela.blit(textSurf, textRect)
 
 #### Função para sair da tela de jogo ####        
 def sair ():
@@ -169,42 +182,37 @@ def loop ():
     y = 0
     Game = True
     pygame.mixer.music.play(-1)
-
+    
     while Game:
         
-        relogio.tick(100)
+        relogio.tick(FPS)
     
         pressed_keys = pygame.key.get_pressed()
 #### ESC sai do jogo ####        
         if pressed_keys[pygame.K_ESCAPE]:
             Game = False
-            sair()
+            menu()
     
         for event in pygame.event.get():
             if event.type == pygame.QUIT:            
                 pygame.mixer.music.stop()
                 Game = False
+                
 #### SPACE atira ####                
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     personagem.Tiro(tudo, tiros_group)
                     pygame.mixer.Sound.play(som_tiro)
-
+                    
 #### MOVIMENTO DA TELA ####      
-      
         rel_x = x % fundo.get_rect().width
         rel_y = y % fundo.get_rect().height
         tela.blit(fundo, (rel_x - fundo.get_rect().width, rel_y - fundo.get_rect().height))
-        if rel_x < largura_tela or rel_y < altura_tela:
-            tela.blit (fundo, (rel_x, rel_y))
-        x -= 4
-        y += 4
+        if rel_x < largura_tela and rel_y < altura_tela:
+                tela.blit (fundo, (rel_x, 0))
+        x -= 5
+        y += 5
         
-        if rel_x == 300 and rel_y == 200:
-            rel_x = 0
-            rel_y = 0
-        tela.blit (fundo, (rel_x, rel_y))
- 
         #####PONTUACAO#####
         score(int(pygame.time.get_ticks()/1000))
         
@@ -213,16 +221,44 @@ def loop ():
         tudo.draw(tela)
         pygame.display.flip()
        
+def back():
+    menu()
+    
+def play():
+    loop()
 
 #### REFERÊNCIA PRO MENU ####
 #https://pythonprogramming.net/adding-sounds-music-pygame/  --> Menu
 
-#### Função das letras nos botões ####
-def text_objects(texto, fonte):
-    pygame.font.get_fonts()
-    textSurface = fonte.render(texto, True, white)
-    return textSurface, textSurface.get_rect()
-
+#### Função para o menu de instruções ####
+def instructions():
+    instruction = True
+    x = 0
+    bckgd = pygame.image.load("imagens/fundo.png").convert()
+    while instruction:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        
+        rel_x = x % bckgd.get_rect().width
+        tela.blit(bckgd, (rel_x -bckgd.get_rect().width, 0))
+        if rel_x < largura_tela:
+            tela.blit (bckgd, (rel_x, 0))
+        x -= 4
+        
+        
+        mensagem("Instructions", largura_tela/2, altura_tela/3, 130)
+        mensagem("Shoot ----> Space Bar", largura_tela/2, altura_tela/2, 50)
+        mensagem("Move ----> Arrow Keys", largura_tela/2, altura_tela/2 + 100, 50)
+        
+        botoes("Play", largura_tela/2 - 175, altura_tela/2 + 150, w_green,\
+               h_green, green, bright_green, play)
+        botoes("Back", largura_tela/2- 175, altura_tela/2 + 250, w_red,\
+               h_red, red, bright_red, back)
+        
+        pygame.display.update()
+        relogio.tick(FPS)
 
 def botoes(msg, x, y, w, h, ic, ac, action = None):
     
@@ -246,11 +282,8 @@ def botoes(msg, x, y, w, h, ic, ac, action = None):
     else:
         pygame.draw.rect(tela, ic, (x, y, w, h))
         
-        
-    smallText = pygame.font.SysFont("rockwellcondensed", 45)
-    textSurf, textRect = text_objects(msg, smallText)
-    textRect.center = ((x + (w / 2)), (y + (h / 2)))
-    tela.blit(textSurf, textRect)
+    mensagem(msg, x + (w/2),  y + (h/2), 40)
+    
         
     
 def menu():
@@ -270,16 +303,14 @@ def menu():
         x -= 4
         
         
-        largeText = pygame.font.SysFont("rockwellcondensed", 120)
-        TextSurf, TextRect = text_objects("Space Run", largeText)
-        TextRect.center = ((largura_tela / 2), (altura_tela / 3))
-        tela.blit(TextSurf, TextRect)
+        mensagem("Space Run", largura_tela/2, altura_tela/2-200, 120)
 
         botoes("Start", x_green, y_green, w_green, h_green, green, bright_green, loop)
+        botoes("Instructions",x_blue, y_blue, w_blue, h_blue, blue, bright_blue, instructions)
         botoes("Quit", x_red, y_red, w_red, h_red, red, bright_red, sair)
 
         pygame.display.update()
-        relogio.tick(15)
+        relogio.tick(FPS)
         
         
 #===================== INÍCIO ======================
@@ -295,7 +326,7 @@ altura_tela = 700
 
 tela = pygame.display.set_mode((largura_tela, altura_tela), 0, 32)
 
-pygame.display.set_caption('STARSHIPS')
+pygame.display.set_caption('Space Run')
 
 relogio = pygame.time.Clock()
     
@@ -308,7 +339,7 @@ fundo = pygame.image.load("imagens/fundo.png").convert()
 tudo = pygame.sprite.Group()
 
 personagem_group = pygame.sprite.Group()
-personagem =  Personagem("imagens/personagem.png")
+personagem =  Personagem("imagens/personagem.gif")
 personagem_group.add(personagem)
 tudo.add(personagem)
 
