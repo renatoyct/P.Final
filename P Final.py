@@ -6,6 +6,7 @@ Created on Tue May  8 09:36:34 2018
 """
 
 import pygame
+import random
 
 #======================= CLASSES ===========================
 
@@ -105,6 +106,39 @@ class Tiros(pygame.sprite.Sprite):
             self.kill()
         if self.rect.right < 0:
             self.kill()
+            
+#Referência
+#https://github.com/kidscancode/pygame_tutorials/blob/master/shmup/shmup-4.py 
+            
+#### Obstáculos ####
+            
+class Satélite(pygame.sprite.Sprite):
+    def __init__(self, obstaculos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(obstaculos).convert()
+        self.image.set_colorkey(black)
+        self.rect = self.image.get_rect()
+        self.rect.x = random.randrange(largura_tela - self.rect.width)
+        self.rect.y = random.randrange(-100, -40)
+        self.speedy = random.randrange(1, 8)
+        self.speedx = random.randrange(-3, 3)
+
+    def update(self):
+        self.rect.x += self.speedx
+        self.rect.y += self.speedy
+        if self.rect.top > altura_tela + 10 or self.rect.left < -25 or self.rect.right > largura_tela + 20:
+            self.rect.x = random.randrange(largura_tela - self.rect.width)
+            self.rect.y = random.randrange(-100, -40)
+            self.speedy = random.randrange(1, 8)
+ 
+all_sprites = pygame.sprite.Group()
+mobs = pygame.sprite.Group()
+           
+def Novo_Satélite(lista_obstaculos, tudo, mobs):
+    S = Satélite(random.choice(lista_obstaculos))
+    tudo.add(S)
+    mobs.add(S)
+    
 #===================== CORES ============================= 
 
 #### Combinação de numeros caracteriza as cores RGB ####
@@ -183,6 +217,24 @@ def loop ():
     Game = True
     pygame.mixer.music.play(-1)
     
+    #=================  CRIANDO GRUPOS  ========================
+    
+    tudo = pygame.sprite.Group()
+    
+    personagem_group = pygame.sprite.Group()
+    personagem =  Personagem("imagens/personagem.gif")
+    personagem_group.add(personagem)
+    tudo.add(personagem)
+    
+    lista_obstaculos = ['imagens/Satélite.png', 'imagens/Satélite2.png',
+                       'imagens/Satélite3.png', 'imagens/Satélite4.png', 'imagens/Satélite5.png',
+                       'imagens/Satélite6.png']
+    
+    tiros_group = pygame.sprite.Group()
+    
+    for i in range(8):
+        Novo_Satélite(lista_obstaculos, tudo, mobs)
+    
     while Game:
         
         relogio.tick(FPS)
@@ -212,6 +264,22 @@ def loop ():
                 tela.blit (fundo, (rel_x, 0))
         x -= 5
         y += 5
+        
+        # Update
+        
+        all_sprites = pygame.sprite.Group()
+         
+        all_sprites.update()
+        
+        # Verifica se o tiro acertou algum Satélite
+        tiros = pygame.sprite.groupcollide(mobs, tiros_group, True, True)
+        for tiro in tiros:
+            Novo_Satélite(lista_obstaculos, tudo, mobs)
+            
+        # Verifica se o Satélite atingiu o player
+        hits = pygame.sprite.spritecollide(personagem, mobs, False)
+        if hits:
+            Game = False
         
         #####PONTUACAO#####
         score(int(pygame.time.get_ticks()/1000))
@@ -335,6 +403,9 @@ fundo = pygame.image.load("imagens/fundo.png").convert()
 
 #=================  CRIANDO GRUPOS  ========================
 
+lista_obstaculos = ['imagens/Satélite.png', 'imagens/Satélite2.png',
+                   'imagens/Satélite3.png', 'imagens/Satélite4.png', 'imagens/Satélite5.png',
+                   'imagens/Satélite6.png']
 
 tudo = pygame.sprite.Group()
 
