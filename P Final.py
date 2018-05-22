@@ -7,6 +7,7 @@ Created on Tue May  8 09:36:34 2018
 
 import pygame
 import random
+import sys
 
 #======================= CLASSES ===========================
 
@@ -215,6 +216,7 @@ def loop ():
     x = 0
     y = 0
     Game = True
+    zap=pygame.time.get_ticks()
     pygame.mixer.music.play(-1)
     
     #=================  CRIANDO GRUPOS  ========================
@@ -256,7 +258,8 @@ def loop ():
                     personagem.Tiro(tudo, tiros_group)
                     pygame.mixer.Sound.play(som_tiro)
                     
-#### MOVIMENTO DA TELA ####      
+#### MOVIMENTO DA TELA ####    
+           
         rel_x = x % fundo.get_rect().width
         rel_y = y % fundo.get_rect().height
         tela.blit(fundo, (rel_x - fundo.get_rect().width, rel_y - fundo.get_rect().height))
@@ -264,7 +267,7 @@ def loop ():
                 tela.blit (fundo, (rel_x, 0))
         x -= 5
         y += 5
-        
+
         # Update
         
         all_sprites = pygame.sprite.Group()
@@ -280,9 +283,11 @@ def loop ():
         hits = pygame.sprite.spritecollide(personagem, mobs, False)
         if hits:
             Game = False
+            pygame.mixer.music.stop()
+            
         
         #####PONTUACAO#####
-        score(int(pygame.time.get_ticks()/1000))
+        score(int((pygame.time.get_ticks()-zap)/1000))
         
         tudo.update()
 #Desenhar tudo que está no grupo "tudo" na tela ####        
