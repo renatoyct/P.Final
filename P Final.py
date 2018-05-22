@@ -261,7 +261,7 @@ def loop ():
                     personagem.Tiro(tudo, tiros_group)
                     pygame.mixer.Sound.play(som_tiro)
                     
-<<<<<<< HEAD
+
 #### MOVIMENTO DA TELA ####      
         tela.blit(fundo, (fundo_x, fundo_y))
         fundo_x -= 5
@@ -269,9 +269,10 @@ def loop ():
         if fundo_y > 0:
             fundo_x = 0
             fundo_y = tela.get_height() - fundo.get_height()
-=======
+
 #### MOVIMENTO DA TELA ####    
-           
+        x=0
+        y=0
         rel_x = x % fundo.get_rect().width
         rel_y = y % fundo.get_rect().height
         tela.blit(fundo, (rel_x - fundo.get_rect().width, rel_y - fundo.get_rect().height))
@@ -285,7 +286,7 @@ def loop ():
         all_sprites = pygame.sprite.Group()
          
         all_sprites.update()
->>>>>>> 1372ffcbb8a7b526b5e8a97706201923e91ac0a8
+
         
         # Verifica se o tiro acertou algum Satélite
         tiros = pygame.sprite.groupcollide(mobs, tiros_group, True, True)
@@ -297,12 +298,12 @@ def loop ():
         hits = pygame.sprite.spritecollide(personagem, mobs, False)
         if hits:
             Game = False
-<<<<<<< HEAD
+
             menu()
-=======
+
             pygame.mixer.music.stop()
             
->>>>>>> 1372ffcbb8a7b526b5e8a97706201923e91ac0a8
+
         
         #####PONTUACAO#####
         score(int((pygame.time.get_ticks()-zap)/1000))
