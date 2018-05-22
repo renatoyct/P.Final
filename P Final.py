@@ -280,7 +280,7 @@ def loop ():
             menu()
         
         #####PONTUACAO#####
-        score(int(pygame.time.get_ticks()-zap/1000))
+        score(int((pygame.time.get_ticks()-zap)/1000))
         
         tudo.update()
 #Desenhar tudo que está no grupo "tudo" na tela ####        
