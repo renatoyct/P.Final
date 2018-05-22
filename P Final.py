@@ -8,6 +8,7 @@ Created on Tue May  8 09:36:34 2018
 import pygame
 from random import randrange
 import random
+import sys
 
 #======================= CLASSES ===========================
 
@@ -218,6 +219,7 @@ def loop ():
     fundo_x = 0
     fundo_y = tela.get_height() - fundo.get_height()
     Game = True
+    zap=pygame.time.get_ticks()
     pygame.mixer.music.play(-1)
     zap = pygame.time.get_ticks()
     #=================  CRIANDO GRUPOS  ========================
@@ -259,6 +261,7 @@ def loop ():
                     personagem.Tiro(tudo, tiros_group)
                     pygame.mixer.Sound.play(som_tiro)
                     
+<<<<<<< HEAD
 #### MOVIMENTO DA TELA ####      
         tela.blit(fundo, (fundo_x, fundo_y))
         fundo_x -= 5
@@ -266,6 +269,23 @@ def loop ():
         if fundo_y > 0:
             fundo_x = 0
             fundo_y = tela.get_height() - fundo.get_height()
+=======
+#### MOVIMENTO DA TELA ####    
+           
+        rel_x = x % fundo.get_rect().width
+        rel_y = y % fundo.get_rect().height
+        tela.blit(fundo, (rel_x - fundo.get_rect().width, rel_y - fundo.get_rect().height))
+        if rel_x < largura_tela and rel_y < altura_tela:
+                tela.blit (fundo, (rel_x, 0))
+        x -= 5
+        y += 5
+
+        # Update
+        
+        all_sprites = pygame.sprite.Group()
+         
+        all_sprites.update()
+>>>>>>> 1372ffcbb8a7b526b5e8a97706201923e91ac0a8
         
         # Verifica se o tiro acertou algum Satélite
         tiros = pygame.sprite.groupcollide(mobs, tiros_group, True, True)
@@ -277,7 +297,12 @@ def loop ():
         hits = pygame.sprite.spritecollide(personagem, mobs, False)
         if hits:
             Game = False
+<<<<<<< HEAD
             menu()
+=======
+            pygame.mixer.music.stop()
+            
+>>>>>>> 1372ffcbb8a7b526b5e8a97706201923e91ac0a8
         
         #####PONTUACAO#####
         score(int((pygame.time.get_ticks()-zap)/1000))
