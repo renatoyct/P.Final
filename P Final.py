@@ -2,10 +2,11 @@
 """
 Created on Tue May  8 09:36:34 2018
 
-@author: Arthur Farsky, Pedro Perri and Renato Tajima
+@author: Pedro Perri
 """
 
 import pygame
+from random import randrange
 import random
 
 #======================= CLASSES ===========================
@@ -118,18 +119,19 @@ class Satélite(pygame.sprite.Sprite):
         self.image = pygame.image.load(obstaculos).convert()
         self.image.set_colorkey(black)
         self.rect = self.image.get_rect()
-        self.rect.x = random.randrange(largura_tela - self.rect.width)
-        self.rect.y = random.randrange(-100, -40)
-        self.speedy = random.randrange(1, 8)
-        self.speedx = random.randrange(-3, 3)
+        self.rect.x = randrange(500,2000)
+        self.rect.y = randrange(-100, -60)
+        self.speedy = 2
+        self.speedx = -2
 
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
-        if self.rect.top > altura_tela + 10 or self.rect.left < -25 or self.rect.right > largura_tela + 20:
-            self.rect.x = random.randrange(largura_tela - self.rect.width)
-            self.rect.y = random.randrange(-100, -40)
-            self.speedy = random.randrange(1, 8)
+        if self.rect.top > altura_tela + 10 or self.rect.left < -25 \
+        or self.rect.right > largura_tela + 20:
+            self.rect.x = randrange(500,2000)
+            self.rect.y = randrange(-100, -60)
+            self.speedy = 2
  
 all_sprites = pygame.sprite.Group()
 mobs = pygame.sprite.Group()
@@ -211,12 +213,13 @@ def sair ():
     quit()
     
 #### Função loop que faz o jogo rodar ####
-def loop ():
-    x = 0
-    y = 0
+def loop ():    
+    fundo = pygame.image.load("imagens/fundo.png").convert()
+    fundo_x = 0
+    fundo_y = tela.get_height() - fundo.get_height()
     Game = True
     pygame.mixer.music.play(-1)
-    
+    zap = pygame.time.get_ticks()
     #=================  CRIANDO GRUPOS  ========================
     
     tudo = pygame.sprite.Group()
@@ -227,8 +230,8 @@ def loop ():
     tudo.add(personagem)
     
     lista_obstaculos = ['imagens/Satélite.png', 'imagens/Satélite2.png',
-                       'imagens/Satélite3.png', 'imagens/Satélite4.png', 'imagens/Satélite5.png',
-                       'imagens/Satélite6.png']
+                       'imagens/Satélite3.png', 'imagens/Satélite4.png', 
+                       'imagens/Satélite5.png', 'imagens/Satélite6.png']
     
     tiros_group = pygame.sprite.Group()
     
@@ -257,32 +260,27 @@ def loop ():
                     pygame.mixer.Sound.play(som_tiro)
                     
 #### MOVIMENTO DA TELA ####      
-        rel_x = x % fundo.get_rect().width
-        rel_y = y % fundo.get_rect().height
-        tela.blit(fundo, (rel_x - fundo.get_rect().width, rel_y - fundo.get_rect().height))
-        if rel_x < largura_tela and rel_y < altura_tela:
-                tela.blit (fundo, (rel_x, 0))
-        x -= 5
-        y += 5
-        
-        # Update
-        
-        all_sprites = pygame.sprite.Group()
-         
-        all_sprites.update()
+        tela.blit(fundo, (fundo_x, fundo_y))
+        fundo_x -= 5
+        fundo_y += 5
+        if fundo_y > 0:
+            fundo_x = 0
+            fundo_y = tela.get_height() - fundo.get_height()
         
         # Verifica se o tiro acertou algum Satélite
         tiros = pygame.sprite.groupcollide(mobs, tiros_group, True, True)
         for tiro in tiros:
             Novo_Satélite(lista_obstaculos, tudo, mobs)
             
+            
         # Verifica se o Satélite atingiu o player
         hits = pygame.sprite.spritecollide(personagem, mobs, False)
         if hits:
             Game = False
+            menu()
         
         #####PONTUACAO#####
-        score(int(pygame.time.get_ticks()/1000))
+        score(int(pygame.time.get_ticks()-zap/1000))
         
         tudo.update()
 #Desenhar tudo que está no grupo "tudo" na tela ####        
@@ -398,14 +396,11 @@ pygame.display.set_caption('Space Run')
 
 relogio = pygame.time.Clock()
     
-fundo = pygame.image.load("imagens/fundo.png").convert()
-
 
 #=================  CRIANDO GRUPOS  ========================
-
 lista_obstaculos = ['imagens/Satélite.png', 'imagens/Satélite2.png',
-                   'imagens/Satélite3.png', 'imagens/Satélite4.png', 'imagens/Satélite5.png',
-                   'imagens/Satélite6.png']
+                       'imagens/Satélite3.png', 'imagens/Satélite4.png', 
+                       'imagens/Satélite5.png', 'imagens/Satélite6.png']
 
 tudo = pygame.sprite.Group()
 
