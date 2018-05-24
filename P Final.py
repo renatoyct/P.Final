@@ -1,14 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue May  8 09:36:34 2018
-
-@author: Pedro Perri
-"""
-
 import pygame
 from random import randrange
 import random
-import sys
 
 #======================= CLASSES ===========================
 
@@ -84,7 +76,7 @@ class Personagem (pygame.sprite.Sprite):
             self.rect.top = 5
             
     def Tiro(self, tudo, tiros_group):
-        tiro = Tiros('imagens/tiro_azul.gif', self.rect.top - 15, self.rect.centerx + 50)
+        tiro = Tiros('imagens/tiro_1.gif', self.rect.top - 15, self.rect.centerx + 50)
         tudo.add(tiro)
         tiros_group.add(tiro)
         
@@ -166,66 +158,45 @@ bright_purple = (255, 0, 255)
 largura_tela = 1000
 altura_tela = 700
 FPS = 100     
-#================ BOTÕES ===============
 
-"BOTÃO VERDE"
-x_green = largura_tela/2 - 170
-y_green = altura_tela/2 
-w_green = 350
-h_green = 50
-    
-"BOTÃO VERMELHO"
-x_red = largura_tela/2 - 170
-y_red = altura_tela/2 + 200
-w_red = 350
-h_red = 50
-        
-'CARACTERÍSTICAS DO BOTÃO AZUL (X, Y, W, H)'
-x_blue = largura_tela/2 - 170
-y_blue = altura_tela/2 + 100
-w_blue = 350
-h_blue = 50      
+#===================== FUNÇÕES ============================= 
 
-#===================== FUNÇÕES =============================     
-    
-#### Função que gera a pontuação
 def score(score):
     largeText = pygame.font.SysFont("None", 50)
     banana = largeText.render("score: "+str(score),0,(255,255,255))
     tela.blit(banana,(0,0))
     pygame.display.update()
     
-#### Função das letras nos botões ####
 def mensagem(msg, x, y, tamanho):
     
     def text_objects(texto, fonte):
         pygame.font.get_fonts()
         textSurface = fonte.render(texto, True, white)
+
         return textSurface, textSurface.get_rect()
     
     smallText = pygame.font.SysFont("rockwellcondensed", tamanho)
     textSurf, textRect = text_objects(msg, smallText)
     textRect.center = (x, y)
     tela.blit(textSurf, textRect)
-
-#### Função para sair da tela de jogo ####        
-def sair ():
-    pygame.quit()
-    quit()
     
-#### Função loop que faz o jogo rodar ####
-def loop ():    
-    fundo = pygame.image.load("imagens/fundo.png").convert()
+
+    
+
+def loop():
+    x = 0
+    Start = True
+    Menu = True
+    Instruction = False
+    Game = False
+    Game_over = False
+    Pause = False
+    fnd = pygame.image.load("imagens/fundo.png").convert()
     fundo_x = 0
-    fundo_y = tela.get_height() - fundo.get_height()
-    Game = True
-    zap=pygame.time.get_ticks()
+    fundo_y = tela.get_height() - fnd.get_height()
     pygame.mixer.music.play(-1)
     zap = pygame.time.get_ticks()
-    #=================  CRIANDO GRUPOS  ========================
-    
-    tudo = pygame.sprite.Group()
-    
+    tudo = pygame.sprite.Group()    
     personagem_group = pygame.sprite.Group()
     personagem =  Personagem("imagens/personagem.gif")
     personagem_group.add(personagem)
@@ -233,177 +204,211 @@ def loop ():
     
     lista_obstaculos = ['imagens/Satélite.png', 'imagens/Satélite2.png',
                        'imagens/Satélite3.png', 'imagens/Satélite4.png', 
-                       'imagens/Satélite5.png', 'imagens/Satélite6.png']
+                       'imagens/Satélite5.png', 'imagens/Satélite6.png']    
     
-    tiros_group = pygame.sprite.Group()
-    
-    for i in range(8):
-        Novo_Satélite(lista_obstaculos, tudo, mobs)
-    
-    while Game:
+    while Start:
         
-        relogio.tick(FPS)
-    
-        pressed_keys = pygame.key.get_pressed()
-#### ESC sai do jogo ####        
-        if pressed_keys[pygame.K_ESCAPE]:
-            Game = False
-            menu()
-    
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:            
-                pygame.mixer.music.stop()
-                Game = False
-                
-#### SPACE atira ####                
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    personagem.Tiro(tudo, tiros_group)
-                    pygame.mixer.Sound.play(som_tiro)
-                    
-<<<<<<< HEAD
-#### MOVIMENTO DA TELA ####      
-        tela.blit(fundo, (fundo_x, fundo_y))
-        fundo_x -= 5
-        fundo_y += 5
-        if fundo_y > 0:
-            fundo_x = 0
-            fundo_y = tela.get_height() - fundo.get_height()
-=======
-#### MOVIMENTO DA TELA ####    
-           
-        rel_x = x % fundo.get_rect().width
-        rel_y = y % fundo.get_rect().height
-        tela.blit(fundo, (rel_x - fundo.get_rect().width, rel_y - fundo.get_rect().height))
-        if rel_x < largura_tela and rel_y < altura_tela:
-                tela.blit (fundo, (rel_x, 0))
-        x -= 5
-        y += 5
-
-        # Update
-        
-        all_sprites = pygame.sprite.Group()
-         
-        all_sprites.update()
->>>>>>> 1372ffcbb8a7b526b5e8a97706201923e91ac0a8
-        
-        # Verifica se o tiro acertou algum Satélite
-        tiros = pygame.sprite.groupcollide(mobs, tiros_group, True, True)
-        for tiro in tiros:
+        for i in range(2):
             Novo_Satélite(lista_obstaculos, tudo, mobs)
-            
-            
-        # Verifica se o Satélite atingiu o player
-        hits = pygame.sprite.spritecollide(personagem, mobs, False)
-        if hits:
-            Game = False
-<<<<<<< HEAD
-            menu()
-=======
-            pygame.mixer.music.stop()
-            
->>>>>>> 1372ffcbb8a7b526b5e8a97706201923e91ac0a8
         
-        #####PONTUACAO#####
-        score(int((pygame.time.get_ticks()-zap)/1000))
-        
-        tudo.update()
-#Desenhar tudo que está no grupo "tudo" na tela ####        
-        tudo.draw(tela)
-        pygame.display.flip()
-       
-def back():
-    menu()
+        while Menu:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                    
+            rel_x = x % fnd.get_rect().width
+            tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
+            if rel_x < largura_tela:
+                tela.blit (fnd, (rel_x, 0))
+            x -= 4
+                        
+            mensagem("SPACE RUN", largura_tela/2, altura_tela/2-200, 120 )
     
-def play():
-    loop()
+            mensagem("Press enter to play", largura_tela/2, altura_tela/2, 50 )
+            mensagem("Press ' I ' for instructions",largura_tela/2, altura_tela/2 + 100, 50)
+            mensagem("Press 'ESC' to quit", largura_tela/2, altura_tela/2 + 200, 50)
 
-#### REFERÊNCIA PRO MENU ####
-#https://pythonprogramming.net/adding-sounds-music-pygame/  --> Menu
-
-#### Função para o menu de instruções ####
-def instructions():
-    instruction = True
-    x = 0
-    bckgd = pygame.image.load("imagens/fundo.png").convert()
-    while instruction:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-        
-        rel_x = x % bckgd.get_rect().width
-        tela.blit(bckgd, (rel_x -bckgd.get_rect().width, 0))
-        if rel_x < largura_tela:
-            tela.blit (bckgd, (rel_x, 0))
-        x -= 4
-        
-        
-        mensagem("Instructions", largura_tela/2, altura_tela/3, 130)
-        mensagem("Shoot ----> Space Bar", largura_tela/2, altura_tela/2, 50)
-        mensagem("Move ----> Arrow Keys", largura_tela/2, altura_tela/2 + 100, 50)
-        
-        botoes("Play", largura_tela/2 - 175, altura_tela/2 + 150, w_green,\
-               h_green, green, bright_green, play)
-        botoes("Back", largura_tela/2- 175, altura_tela/2 + 250, w_red,\
-               h_red, red, bright_red, back)
-        
-        pygame.display.update()
-        relogio.tick(FPS)
-
-def botoes(msg, x, y, w, h, ic, ac, action = None):
-    
-    #colocando os botões
-    # x: A posição no eixo x da caixa do botão.
-    # y: A posição no eixo y da caixa do botão.
-    # w: Button width.
-    # h: Button height.
-    # ic: Inactive color (when a mouse is not hovering).
-    # ac: Active color (when a mouse is hovering).
-    
-    
-    mouse = pygame.mouse.get_pos()
-    click = pygame.mouse.get_pressed()
-    
-
-    if x + w > mouse[0] > x and y + h > mouse[1] > y:
-        pygame.draw.rect(tela, ac, (x, y, w, h))
-        if click[0] == 1 and action != None:
-            action()         
-    else:
-        pygame.draw.rect(tela, ic, (x, y, w, h))
-        
-    mensagem(msg, x + (w/2),  y + (h/2), 40)
-    
-        
-    
-def menu():
-    x = 0
-    start = True
-    fnd = pygame.image.load("imagens/fundo.png").convert()
-    while start:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
+            pressed_keys = pygame.key.get_pressed()
+            if pressed_keys[pygame.K_RETURN]:
+                Menu= False
+                Game = True
+            if pressed_keys[pygame.K_i]:
+                Menu = False
+                Instruction = True
+            if pressed_keys[pygame.K_ESCAPE]:
+                Menu = False
+                Start = False
                 
-        rel_x = x % fnd.get_rect().width
-        tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
-        if rel_x < largura_tela:
-            tela.blit (fnd, (rel_x, 0))
-        x -= 4
+            pygame.display.update()
+            relogio.tick(FPS)        
         
+        while Instruction:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                
+            rel_x = x % fnd.get_rect().width
+            tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
+            if rel_x < largura_tela:
+                tela.blit (fnd, (rel_x, 0))
+            x -= 4               
+                
+            mensagem("INSTRUCTIONS", largura_tela/2, altura_tela/4, 120)
+            mensagem("Shoot ----> Space Bar", largura_tela/2, altura_tela/3+50, 50)
+            mensagem("Move ----> Arrow Keys", largura_tela/2, altura_tela/2 , 50)
+                
+            mensagem("Press enter to play", largura_tela/2 , altura_tela/2 + 100, 50)
+            mensagem("Press 'B' to menu", largura_tela/2, altura_tela/2 + 200, 50)
+            
+            pressed_keys = pygame.key.get_pressed()
+            if pressed_keys[pygame.K_RETURN]:
+                Instruction = False
+                Game = True
+            if pressed_keys[pygame.K_b]:
+                Instruction = False
+                Menu = True
+                
+            pygame.display.update()
+            relogio.tick(FPS)
         
-        mensagem("Space Run", largura_tela/2, altura_tela/2-200, 120)
+        while Game:
+                
+            pressed_keys = pygame.key.get_pressed()
+    #### ESC sai do jogo ####        
+            if pressed_keys[pygame.K_ESCAPE]:
+                Game = False
+                Start = False
+            
+            if pressed_keys[pygame.K_p]:
+                Game = False
+                Pause = True
+                    
+        
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:            
+                    pygame.mixer.music.stop()
+                    Game = False
+                    Start = False
+                    
+    #### SPACE atira ####                
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        personagem.Tiro(tudo, tiros_group)
+                        pygame.mixer.Sound.play(som_tiro)
+                        
+    #### MOVIMENTO DA TELA ####      
+            tela.blit(fnd, (fundo_x, fundo_y))
+            fundo_x -= 5
+            fundo_y += 5
+            if fundo_y > 0:
+                fundo_x = 0
+                fundo_y = tela.get_height() - fnd.get_height()
+            
+            # Verifica se o tiro acertou algum Satélite
+            tiros = pygame.sprite.groupcollide(mobs, tiros_group, True, True)
+            for tiro in tiros:
+                Novo_Satélite(lista_obstaculos, tudo, mobs)
+                
+                
+            # Verifica se o Satélite atingiu o player
+            hits = pygame.sprite.spritecollide(personagem, mobs, False)
+            if hits:
+                Game = False
+                Game_over = True
+                x = 0
+                
+            
+            
+            #####PONTUACAO#####
+            score(int((pygame.time.get_ticks()-zap)/1000))
+            
+            tudo.update()
+#Desenhar tudo que está no grupo "tudo" na tela ####        
+            tudo.draw(tela)
+            pygame.display.flip()
+    #Desenhar tudo que está no grupo "tudo" na tela ####        
+            
 
-        botoes("Start", x_green, y_green, w_green, h_green, green, bright_green, loop)
-        botoes("Instructions",x_blue, y_blue, w_blue, h_blue, blue, bright_blue, instructions)
-        botoes("Quit", x_red, y_red, w_red, h_red, red, bright_red, sair)
+        while Game_over:
+            tudo = pygame.sprite.Group()    
+            personagem_group = pygame.sprite.Group()
+            personagem =  Personagem("imagens/personagem.gif")
+            personagem_group.add(personagem)
+            tudo.add(personagem)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                    
+            rel_x = x % fnd.get_rect().width
+            tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
+            if rel_x < largura_tela:
+                tela.blit (fnd, (rel_x, 0))
+            x -= 4
+            
+            mensagem("GAME OVER", largura_tela/2, altura_tela/2-200, 120)
+            
+            mensagem("Press 'R' to restart", largura_tela/2, altura_tela/2, 50)
+            mensagem("Presse 'M' to menu", largura_tela/2, altura_tela/2 + 100, 50)
+            mensagem("Press 'ESC' to quit", largura_tela/2, altura_tela/2 + 200, 50)
+                
+            pressed_keys = pygame.key.get_pressed()
+            
+            if pressed_keys[pygame.K_r]:
+                Game_over = False
+                tudo = pygame.sprite.Group()    
+                personagem_group = pygame.sprite.Group()
+                personagem =  Personagem("imagens/personagem.gif")
+                personagem_group.add(personagem)
+                tudo.add(personagem)
+                Game = True
+            if pressed_keys[pygame.K_m]:
+                Game_over = False
+                Menu = True
+            if pressed_keys[pygame.K_ESCAPE]:
+                Game_over = False
+                Start = False
+                
+            tudo.draw(tela)
+            pygame.display.update()
+            relogio.tick(FPS)      
+                
+        while Pause:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                if event.type == pygame.KEYDOWN:
+                    Pause = False
+            
+            rel_x = x % fnd.get_rect().width
+            tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
+            if rel_x < largura_tela:
+                tela.blit (fnd, (rel_x, 0))
+            x -= 4
+            
+            mensagem("PAUSED", largura_tela/2, altura_tela/2-200, 120)
+            mensagem("Press enter to continue", largura_tela/2, altura_tela/2, 50)
+            mensagem("Press 'M' to menu", largura_tela/2, altura_tela/2 + 100, 50)
+            mensagem("Press 'ESC' to quit", largura_tela/2, altura_tela/2 + 200, 50)
+            
+            pressed_keys = pygame.key.get_pressed()
+            if pressed_keys[pygame.K_RETURN]:
+                Pause = False
+                Game = True
+            if pressed_keys[pygame.K_m]:
+                Pause = False
+                Game= False
+                Menu = True
+            if pressed_keys[pygame.K_ESCAPE]:
+                Pause = False
+                Game = False
+                Start = False
+            
+            tudo.update()
+#Desenhar tudo que está no grupo "tudo" na tela ####        
+            tudo.draw(tela)
+            pygame.display.flip()   
+            
 
-        pygame.display.update()
-        relogio.tick(FPS)
-        
-        
 #===================== INÍCIO ======================
         
         
@@ -436,6 +441,6 @@ tudo.add(personagem)
 
 tiros_group = pygame.sprite.Group()
 
-
-menu()
 loop()
+
+pygame.quit()
