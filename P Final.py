@@ -4,7 +4,6 @@ import random
 
 #======================= CLASSES ===========================
 
-
 class Personagem (pygame.sprite.Sprite):
     
     def __init__(self, arquivo_imagem):
@@ -101,9 +100,6 @@ class Tiros(pygame.sprite.Sprite):
         if self.rect.right < 0:
             self.kill()
             
-#Referência
-#https://github.com/kidscancode/pygame_tutorials/blob/master/shmup/shmup-4.py 
-            
 #### Obstáculos ####
             
 class Satélite(pygame.sprite.Sprite):
@@ -133,6 +129,30 @@ def Novo_Satélite(lista_obstaculos, tudo, mobs):
     S = Satélite(random.choice(lista_obstaculos))
     tudo.add(S)
     mobs.add(S)
+   
+class Explosion(pygame.sprite.Sprite):
+    def __init__(self, center, size):
+        pygame.sprite.Sprite.__init__(self)
+        self.size = size
+        self.image = explosion_anim[self.size][0]
+        self.rect = self.image.get_rect()
+        self.rect.center = center
+        self.frame = 0
+        self.last_update = pygame.time.get_ticks()
+        self.frame_rate = 50
+
+    def update(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_update > self.frame_rate:
+            self.last_update = now
+            self.frame += 1
+            if self.frame == len(explosion_anim[self.size]):
+                self.kill()
+            else:
+                center = self.rect.center
+                self.image = explosion_anim[self.size][self.frame]
+                self.rect = self.image.get_rect()
+                self.rect.center = center
     
 #===================== CORES ============================= 
 
@@ -158,7 +178,7 @@ bright_purple = (255, 0, 255)
 largura_tela = 1000
 altura_tela = 700
 FPS = 100     
-
+    
 #===================== FUNÇÕES ============================= 
 
 def score(score):
@@ -180,9 +200,6 @@ def mensagem(msg, x, y, tamanho):
     textRect.center = (x, y)
     tela.blit(textSurf, textRect)
     
-
-    
-
 def loop():
     x = 0
     Start = True
@@ -308,27 +325,28 @@ def loop():
             tiros = pygame.sprite.groupcollide(mobs, tiros_group, True, True)
             for tiro in tiros:
                 Novo_Satélite(lista_obstaculos, tudo, mobs)
-                
+                expl = Explosion(tiro.rect.center, 'lg')
+                tudo.add(expl)
                 
             # Verifica se o Satélite atingiu o player
             hits = pygame.sprite.spritecollide(personagem, mobs, False)
             if hits:
+                expl = Explosion(tiro.rect.center, 'sm')
+                tudo.add(expl)
+                Novo_Satélite(lista_obstaculos, tudo, mobs)
                 Game = False
                 Game_over = True
                 x = 0
-                
-            
             
             #####PONTUACAO#####
             score(int((pygame.time.get_ticks()-zap)/1000))
             
             tudo.update()
-#Desenhar tudo que está no grupo "tudo" na tela ####        
+    #Desenhar tudo que está no grupo "tudo" na tela ####        
             tudo.draw(tela)
             pygame.display.flip()
     #Desenhar tudo que está no grupo "tudo" na tela ####        
             
-
         while Game_over:
             tudo = pygame.sprite.Group()    
             personagem_group = pygame.sprite.Group()
@@ -407,10 +425,7 @@ def loop():
 #Desenhar tudo que está no grupo "tudo" na tela ####        
             tudo.draw(tela)
             pygame.display.flip()   
-            
-
 #===================== INÍCIO ======================
-        
         
 pygame.init()
 
@@ -425,6 +440,18 @@ tela = pygame.display.set_mode((largura_tela, altura_tela), 0, 32)
 pygame.display.set_caption('Space Run')
 
 relogio = pygame.time.Clock()
+
+explosion_anim = {}
+explosion_anim['lg'] = []
+explosion_anim['sm'] = []
+for i in range(8):
+    filename = 'imagens/Explosao{}.gif'.format(i)
+    img = pygame.image.load(filename).convert()
+    img.set_colorkey(black)
+    img_lg = pygame.transform.scale(img, (75, 75))
+    explosion_anim['lg'].append(img_lg)
+    img_sm = pygame.transform.scale(img, (32, 32))
+    explosion_anim['sm'].append(img_sm)
     
 
 #=================  CRIANDO GRUPOS  ========================
@@ -444,3 +471,7 @@ tiros_group = pygame.sprite.Group()
 loop()
 
 pygame.quit()
+#=================  Referências ========================
+
+#https://pythonprogramming.net/adding-sounds-music-pygame/
+#https://github.com/kidscancode/pygame_tutorials/blob/master/shmup/shmup-14.py
