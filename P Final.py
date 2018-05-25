@@ -500,8 +500,8 @@ def loop():
 pygame.init()
 
 pygame.mixer.music.load("sons/musica.mp3")
-
 som_explosao_nave=pygame.mixer.Sound("sons/Big_Explosion_Cut_Off.ogg")
+som_tiro=pygame.mixer.Sound("sons/tiro.ogg")
 
 largura_tela = 1000
 altura_tela = 700
