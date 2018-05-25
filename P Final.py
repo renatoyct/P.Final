@@ -1,8 +1,16 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue May 22 11:40:01 2018
+
+@author: Pedro Perri
+"""
+
 import pygame
 from random import randrange
 import random
 
 #======================= CLASSES ===========================
+
 
 class Personagem (pygame.sprite.Sprite):
     
@@ -25,38 +33,38 @@ class Personagem (pygame.sprite.Sprite):
 #### Nave movendo para a diagonal esquerda alta ####
         if keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT] and not\
         keystate[pygame.K_UP] and not keystate[pygame.K_DOWN]:
-            self.vx = -6
-            self.vy = -3.5
+            self.vx = -19
+            self.vy = -14
 #### Nave movendo para a diagonal direita baixa ####
         if keystate[pygame.K_RIGHT] and not keystate[pygame.K_LEFT] and not\
         keystate[pygame.K_UP] and not keystate[pygame.K_DOWN]:
-            self.vx = 6
-            self.vy = 3.5
+            self.vx = 19
+            self.vy = 14
 #### Nave movendo para a diagonal direita alta ####
         if keystate[pygame.K_UP] and not keystate[pygame.K_DOWN] and not\
         keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
-            self.vx = 6
-            self.vy = -3.5
+            self.vx = 19
+            self.vy = -14
 #### Nave movendo para a diagonal esquerda baixa ####
         if keystate[pygame.K_DOWN] and not keystate[pygame.K_UP] and not\
         keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
-            self.vx = -6
-            self.vy = 3.5
+            self.vx = -19
+            self.vy = 14
         
 #### OUTROS MOVIMENTOS ####
         
 #### Nave movendo para a esquerda ####
         if keystate[pygame.K_LEFT] and keystate[pygame.K_DOWN]:
-            self.vx = -5
+            self.vx = -15
 #### Nave movendo para cima ####
         if keystate[pygame.K_LEFT] and keystate[pygame.K_UP]:
-            self.vy = -5
+            self.vy = -15
 #### Nave movendo para baixo ####
         if keystate[pygame.K_RIGHT] and keystate[pygame.K_DOWN]:
-            self.vy = 5
+            self.vy = 15
 #### Nave movendo para a direita ####
         if keystate[pygame.K_RIGHT] and keystate[pygame.K_UP]:
-            self.vx = 5
+            self.vx = 15
         self.rect.x += self.vx
         self.rect.y += self.vy        
        
@@ -73,6 +81,13 @@ class Personagem (pygame.sprite.Sprite):
 #### Parte de cima da tela ####
         if self.rect.top < 5:
             self.rect.top = 5
+        
+        if self.rect.x < 100 and self.rect.y < 100:
+            self.rect.x = self.rect.x
+            self.rect.y = self.rect.y
+        if self.rect.x > 900 and self.rect.y > 600:
+            self.rect.x = self.rect.x
+            self.rect.y = self.rect.y
             
     def Tiro(self, tudo, tiros_group):
         tiro = Tiros('imagens/tiro_1.gif', self.rect.top - 15, self.rect.centerx + 50)
@@ -88,8 +103,8 @@ class Tiros(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.top = pos_y
         self.rect.centerx = pos_x
-        self.vy = -7
-        self.vx = 10
+        self.vy = -21
+        self.vx = 30
         
     def update(self):
         self.rect.y += self.vy
@@ -100,6 +115,9 @@ class Tiros(pygame.sprite.Sprite):
         if self.rect.right < 0:
             self.kill()
             
+#Referência
+#https://github.com/kidscancode/pygame_tutorials/blob/master/shmup/shmup-4.py 
+            
 #### Obstáculos ####
             
 class Satélite(pygame.sprite.Sprite):
@@ -108,19 +126,19 @@ class Satélite(pygame.sprite.Sprite):
         self.image = pygame.image.load(obstaculos).convert()
         self.image.set_colorkey(black)
         self.rect = self.image.get_rect()
-        self.rect.x = randrange(500,2000)
-        self.rect.y = randrange(-100, -60)
-        self.speedy = 2
-        self.speedx = -2
+        self.rect.x = randrange(500,1500)
+        self.rect.y = randrange(-20, 0)
+        self.speedy = 8
+        self.speedx = -9
 
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
         if self.rect.top > altura_tela + 10 or self.rect.left < -25 \
         or self.rect.right > largura_tela + 20:
-            self.rect.x = randrange(500,2000)
-            self.rect.y = randrange(-100, -60)
-            self.speedy = 2
+            self.rect.x = randrange(500,1500)
+            self.rect.y = randrange(-20, 0)
+            self.speedy = 8
  
 all_sprites = pygame.sprite.Group()
 mobs = pygame.sprite.Group()
@@ -129,7 +147,7 @@ def Novo_Satélite(lista_obstaculos, tudo, mobs):
     S = Satélite(random.choice(lista_obstaculos))
     tudo.add(S)
     mobs.add(S)
-   
+    
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, center, size):
         pygame.sprite.Sprite.__init__(self)
@@ -154,6 +172,7 @@ class Explosion(pygame.sprite.Sprite):
                 self.rect = self.image.get_rect()
                 self.rect.center = center
     
+    
 #===================== CORES ============================= 
 
 #### Combinação de numeros caracteriza as cores RGB ####
@@ -177,8 +196,8 @@ bright_purple = (255, 0, 255)
 #=============== CONFIGURAÇÕES DA TELA ===========
 largura_tela = 1000
 altura_tela = 700
-FPS = 100     
-    
+FPS = 20     
+
 #===================== FUNÇÕES ============================= 
 
 def score(score):
@@ -200,6 +219,9 @@ def mensagem(msg, x, y, tamanho):
     textRect.center = (x, y)
     tela.blit(textSurf, textRect)
     
+
+    
+
 def loop():
     x = 0
     Start = True
@@ -223,12 +245,13 @@ def loop():
                        'imagens/Satélite3.png', 'imagens/Satélite4.png', 
                        'imagens/Satélite5.png', 'imagens/Satélite6.png']    
     
-    while Start:
-        
-        for i in range(2):
+    while Start:    
+    
+        for i in range(3):
             Novo_Satélite(lista_obstaculos, tudo, mobs)
         
         while Menu:
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
@@ -237,7 +260,7 @@ def loop():
             tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
             if rel_x < largura_tela:
                 tela.blit (fnd, (rel_x, 0))
-            x -= 4
+            x -= 9
                         
             mensagem("SPACE RUN", largura_tela/2, altura_tela/2-200, 120 )
     
@@ -247,13 +270,23 @@ def loop():
 
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[pygame.K_RETURN]:
-                Menu= False
+                Menu = False
+                Instruction = False
                 Game = True
+                Game_over = False
+                Pause = False
             if pressed_keys[pygame.K_i]:
                 Menu = False
-                Instruction = True
+                Game = False
+                Instruction = True                
+                Game_over = False
+                Pause = False
             if pressed_keys[pygame.K_ESCAPE]:
                 Menu = False
+                Game = False
+                Instruction = False               
+                Game_over = False
+                Pause = False
                 Start = False
                 
             pygame.display.update()
@@ -268,36 +301,51 @@ def loop():
             tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
             if rel_x < largura_tela:
                 tela.blit (fnd, (rel_x, 0))
-            x -= 4               
+            x -= 9               
                 
             mensagem("INSTRUCTIONS", largura_tela/2, altura_tela/4, 120)
             mensagem("Shoot ----> Space Bar", largura_tela/2, altura_tela/3+50, 50)
             mensagem("Move ----> Arrow Keys", largura_tela/2, altura_tela/2 , 50)
                 
             mensagem("Press enter to play", largura_tela/2 , altura_tela/2 + 100, 50)
-            mensagem("Press 'B' to menu", largura_tela/2, altura_tela/2 + 200, 50)
+            mensagem("Press 'M' to menu", largura_tela/2, altura_tela/2 + 200, 50)
             
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[pygame.K_RETURN]:
-                Instruction = False
-                Game = True
-            if pressed_keys[pygame.K_b]:
-                Instruction = False
-                Menu = True
+                Menu = False
+                Instruction = False 
+                Game = True                              
+                Game_over = False
+                Pause = False
+            if pressed_keys[pygame.K_m]:
+                Instruction = False 
+                Menu = True                
+                Game = False                              
+                Game_over = False
+                Pause = False
                 
             pygame.display.update()
             relogio.tick(FPS)
         
         while Game:
-                
+            
+            relogio.tick(FPS)
+            
             pressed_keys = pygame.key.get_pressed()
     #### ESC sai do jogo ####        
             if pressed_keys[pygame.K_ESCAPE]:
                 Game = False
+                Instruction = False 
+                Menu = False                                             
+                Game_over = False
+                Pause = False
                 Start = False
             
             if pressed_keys[pygame.K_p]:
                 Game = False
+                Instruction = False 
+                Menu = False                                             
+                Game_over = False
                 Pause = True
                     
         
@@ -315,8 +363,8 @@ def loop():
                         
     #### MOVIMENTO DA TELA ####      
             tela.blit(fnd, (fundo_x, fundo_y))
-            fundo_x -= 5
-            fundo_y += 5
+            fundo_x -= 6
+            fundo_y += 6
             if fundo_y > 0:
                 fundo_x = 0
                 fundo_y = tela.get_height() - fnd.get_height()
@@ -335,24 +383,33 @@ def loop():
                 tudo.add(expl)
                 Novo_Satélite(lista_obstaculos, tudo, mobs)
                 Game = False
-                Game_over = True
-                x = 0
+                Instruction = False 
+                Menu = False                                             
+                Game_over = False
+                Pause = False
+                Start = False
+                x = 0  
+            
             
             #####PONTUACAO#####
             score(int((pygame.time.get_ticks()-zap)/1000))
             
             tudo.update()
-    #Desenhar tudo que está no grupo "tudo" na tela ####        
+#Desenhar tudo que está no grupo "tudo" na tela ####        
             tudo.draw(tela)
-            pygame.display.flip()
+            pygame.display.update()
     #Desenhar tudo que está no grupo "tudo" na tela ####        
             
+
         while Game_over:
             tudo = pygame.sprite.Group()    
             personagem_group = pygame.sprite.Group()
             personagem =  Personagem("imagens/personagem.gif")
             personagem_group.add(personagem)
             tudo.add(personagem)
+            lista_obstaculos = ['imagens/Satélite.png', 'imagens/Satélite2.png',
+                                'imagens/Satélite3.png', 'imagens/Satélite4.png', 
+                                'imagens/Satélite5.png', 'imagens/Satélite6.png'] 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
@@ -361,7 +418,7 @@ def loop():
             tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
             if rel_x < largura_tela:
                 tela.blit (fnd, (rel_x, 0))
-            x -= 4
+            x -= 9
             
             mensagem("GAME OVER", largura_tela/2, altura_tela/2-200, 120)
             
@@ -373,17 +430,22 @@ def loop():
             
             if pressed_keys[pygame.K_r]:
                 Game_over = False
-                tudo = pygame.sprite.Group()    
-                personagem_group = pygame.sprite.Group()
-                personagem =  Personagem("imagens/personagem.gif")
-                personagem_group.add(personagem)
-                tudo.add(personagem)
                 Game = True
+                Instruction = False 
+                Menu = False                                             
+                Pause = False
             if pressed_keys[pygame.K_m]:
                 Game_over = False
-                Menu = True
+                Game = False
+                Instruction = False 
+                Menu = True                                             
+                Pause = False
             if pressed_keys[pygame.K_ESCAPE]:
                 Game_over = False
+                Game = False
+                Instruction = False 
+                Menu = False                                             
+                Pause = False
                 Start = False
                 
             tudo.draw(tela)
@@ -397,11 +459,6 @@ def loop():
                 if event.type == pygame.KEYDOWN:
                     Pause = False
             
-            rel_x = x % fnd.get_rect().width
-            tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
-            if rel_x < largura_tela:
-                tela.blit (fnd, (rel_x, 0))
-            x -= 4
             
             mensagem("PAUSED", largura_tela/2, altura_tela/2-200, 120)
             mensagem("Press enter to continue", largura_tela/2, altura_tela/2, 50)
@@ -412,20 +469,31 @@ def loop():
             if pressed_keys[pygame.K_RETURN]:
                 Pause = False
                 Game = True
+                Game_over = False                
+                Instruction = False 
+                Menu = False                
             if pressed_keys[pygame.K_m]:
                 Pause = False
-                Game= False
-                Menu = True
+                Game = False
+                Game_over = False                
+                Instruction = False 
+                Menu = True 
             if pressed_keys[pygame.K_ESCAPE]:
                 Pause = False
                 Game = False
-                Start = False
+                Game_over = False                
+                Instruction = False 
+                Menu = False
+                Start = False 
             
             tudo.update()
 #Desenhar tudo que está no grupo "tudo" na tela ####        
             tudo.draw(tela)
-            pygame.display.flip()   
+            pygame.display.update()   
+            
+
 #===================== INÍCIO ======================
+        
         
 pygame.init()
 
@@ -440,7 +508,7 @@ tela = pygame.display.set_mode((largura_tela, altura_tela), 0, 32)
 pygame.display.set_caption('Space Run')
 
 relogio = pygame.time.Clock()
-
+    
 explosion_anim = {}
 explosion_anim['lg'] = []
 explosion_anim['sm'] = []
@@ -453,7 +521,6 @@ for i in range(8):
     img_sm = pygame.transform.scale(img, (32, 32))
     explosion_anim['sm'].append(img_sm)
     
-
 #=================  CRIANDO GRUPOS  ========================
 lista_obstaculos = ['imagens/Satélite.png', 'imagens/Satélite2.png',
                        'imagens/Satélite3.png', 'imagens/Satélite4.png', 
@@ -471,7 +538,15 @@ tiros_group = pygame.sprite.Group()
 loop()
 
 pygame.quit()
-#=================  Referências ========================
 
-#https://pythonprogramming.net/adding-sounds-music-pygame/
-#https://github.com/kidscancode/pygame_tutorials/blob/master/shmup/shmup-14.py
+
+
+
+
+
+
+
+
+
+
+
