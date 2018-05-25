@@ -379,15 +379,17 @@ def loop():
             # Verifica se o Satélite atingiu o player
             hits = pygame.sprite.spritecollide(personagem, mobs, False)
             if hits:
+                pygame.mixer.Sound.play(som_explosao_nave)
                 expl = Explosion(tiro.rect.center, 'sm')
                 tudo.add(expl)
                 Novo_Satélite(lista_obstaculos, tudo, mobs)
                 Game = False
                 Instruction = False 
                 Menu = False                                             
-                Game_over = False
+                Game_over = True
                 Pause = False
-                Start = False
+                
+               
                 x = 0  
             
             
@@ -498,7 +500,8 @@ def loop():
 pygame.init()
 
 pygame.mixer.music.load("sons/musica.mp3")
-som_tiro=pygame.mixer.Sound("sons/tiro.ogg")
+
+som_explosao_nave=pygame.mixer.Sound("sons/Big_Explosion_Cut_Off.ogg")
 
 largura_tela = 1000
 altura_tela = 700
