@@ -124,7 +124,7 @@ class Satélite(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
-        if self.rect.top > altura_tela + 1000 or self.rect.left < 25 \
+        if self.rect.top > altura_tela + 1000 or self.rect.left < -75 \
         or self.rect.right > largura_tela + 700:
             self.rect.x = randrange(1000,1700)
             self.rect.y = randrange(-1000, 0)
@@ -292,15 +292,10 @@ def loop():
             mensagem("INSTRUCTIONS", largura_tela/2, altura_tela/4, 120)
             mensagem("Shoot ----> Space Bar", largura_tela/2, altura_tela/3+50, 50)
             mensagem("Move ----> Arrow Keys", largura_tela/2, altura_tela/2 , 50)
-                
-            mensagem("Press enter to play", largura_tela/2 , altura_tela/2 + 100, 50)
+            mensagem("Pause ----> P key", largura_tela/2, altura_tela/ 2+ 70, 50)
             mensagem("Press 'B' to menu", largura_tela/2, altura_tela/2 + 200, 50)
             
             pressed_keys = pygame.key.get_pressed()
-            if pressed_keys[pygame.K_RETURN]:
-                Instruction = False
-              
-                Game = True
             if pressed_keys[pygame.K_b]:
                 Instruction = False
                 tudo = pygame.sprite.Group()    
@@ -340,11 +335,6 @@ def loop():
                             tempo_pause = tempo_pause + final_pause - comeco_pause
                             Pause = False
                     
-                    rel_x = x % fnd.get_rect().width
-                    tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
-                    if rel_x < largura_tela:
-                        tela.blit (fnd, (rel_x, 0))
-                    x -= 4
                     
                     mensagem("PAUSED", largura_tela/2, altura_tela/2-200, 120)
                     mensagem("Press enter to continue", largura_tela/2, altura_tela/2, 50)
