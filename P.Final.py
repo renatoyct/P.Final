@@ -299,9 +299,20 @@ def loop():
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[pygame.K_RETURN]:
                 Instruction = False
+              
                 Game = True
             if pressed_keys[pygame.K_b]:
                 Instruction = False
+                tudo = pygame.sprite.Group()    
+                personagem_group = pygame.sprite.Group()
+                personagem =  Personagem("imagens/personagem.gif")
+                personagem_group.add(personagem)
+                tudo.add(personagem)
+                mobs = pygame.sprite.Group()
+                tudo.add(mobs)
+                comeco = time.time()
+                tempo_pause = 0
+                score_hit = 0
                 Menu = True
                 
             pygame.display.update()
@@ -487,7 +498,7 @@ def loop():
         tela.fill(black)
         
         tela.blit(fnd, (0,0))
-        mensagem('{0}'.format(score_final), largura_tela/2, altura_tela/2-200, 100)
+       
             
         tudo.update()
 #Desenhar tudo que está no grupo "tudo" na tela ####        
