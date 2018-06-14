@@ -6,6 +6,10 @@ import time
 #======================= CLASSES ===========================
 
 #Classe do Personagem
+#O personagem recebe um arquivo imagem. No construtor são setadas as 
+#condições inicias do personagem, como suas coordenads iniciais e o tamanho
+#de seu raio
+
 class Personagem (pygame.sprite.Sprite):
     
     def __init__(self, arquivo_imagem):
@@ -20,7 +24,8 @@ class Personagem (pygame.sprite.Sprite):
         self.rect.centerx = largura_tela / 2
         self.rect.bottom = altura_tela - 10
         self.vx = 0        
-
+#Este método permite que a nave se desloque, adicionado a ela velocidade
+#conforme as teclas são pressionadas
     def update(self):
         self.vx = 0 
         self.vy = 0
@@ -43,7 +48,7 @@ class Personagem (pygame.sprite.Sprite):
         keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
             self.vx = 3
             self.vy = -2
-            #### Nave movendo para a diagonal esquerda baixa ####
+#### Nave movendo para a diagonal esquerda baixa ####
         if keystate[pygame.K_DOWN] and not keystate[pygame.K_UP] and not\
         keystate[pygame.K_LEFT] and not keystate[pygame.K_RIGHT]:
             self.vx = -3
@@ -87,6 +92,7 @@ class Personagem (pygame.sprite.Sprite):
         tiros_group.add(tiro)
         
 #Classe dos tiros
+#No construtor são setadas a posição inicial do tiro e seu arquivo imagem
 class Tiros(pygame.sprite.Sprite):
     
     def __init__(self, arquivo_imagem, pos_y, pos_x):
@@ -97,7 +103,7 @@ class Tiros(pygame.sprite.Sprite):
         self.rect.centerx = pos_x
         self.vy = -7
         self.vx = 10
-        
+#Função de movimentação do tiro
     def update(self):
         self.rect.y += self.vy
         self.rect.x += self.vx
@@ -108,7 +114,10 @@ class Tiros(pygame.sprite.Sprite):
             self.kill()
             
 #### Obstáculos ####
-            
+#Classe dos obstáculos
+#No construtor são setadas as imagens dos satélites, a posição inicial 
+#aleatória, o raio e as vaelocidades aleatórias
+
 class Satélite(pygame.sprite.Sprite):
     def __init__(self, obstaculos):
         pygame.sprite.Sprite.__init__(self)
@@ -120,7 +129,7 @@ class Satélite(pygame.sprite.Sprite):
         self.radius = int(self.rect.width * .85 / 2)
         self.speedy = randrange(2,4)
         self.speedx = -randrange(2,4)
-
+#Função que define a movimentção dos satélites
     def update(self):
         self.rect.x += self.speedx
         self.rect.y += self.speedy
@@ -129,12 +138,15 @@ class Satélite(pygame.sprite.Sprite):
             self.rect.x = randrange(1000,1700)
             self.rect.y = randrange(-1000, 0)
             self.speedy = randrange(2,4)
-           
+
+#Função para adicionar os satélites nos grupo "tudo" e "mobs"
 def Novo_Satélite(lista_obstaculos, tudo, mobs):
     S = Satélite(random.choice(lista_obstaculos))
     tudo.add(S)
     mobs.add(S)
    
+#Classe das explosões geradas quando o tiro colide com os satélites e quando
+#a nave colide com os satélites
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, center, size):
         pygame.sprite.Sprite.__init__(self)
@@ -201,6 +213,7 @@ def draw_text(surf, text, size, x, y):
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
     
+#Função para poder escrever mensagens na tela
 def mensagem(msg, x, y, tamanho):
     
     def text_objects(texto, fonte):
@@ -215,6 +228,7 @@ def mensagem(msg, x, y, tamanho):
     tela.blit(textSurf, textRect)
    
 #Loop do jogo
+#Criação de variáveis como "Menu" e "Game" que controlam o anadamento do jogo
 def loop():
     x = 0
     Start = True
@@ -236,27 +250,27 @@ def loop():
     mobs = pygame.sprite.Group()
     tudo.add(mobs)
     tudo.add(personagem)
-    
+#Lista de satélites
     lista_obstaculos = ['imagens/Satélite.png', 'imagens/Satélite2.png',
                        'imagens/Satélite3.png', 'imagens/Satélite4.png', 
                        'imagens/Satélite5.png', 'imagens/Satélite6.png']    
-    
+#Início do jogo
     while Start:
         
         for i in range(15):
             Novo_Satélite(lista_obstaculos, tudo, mobs)
-        
+#Jogo começa com o Menu ativado
         while Menu:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-                    
+#Scroll da tela durante o Menu
             rel_x = x % fnd.get_rect().width
             tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
             if rel_x < largura_tela:
                 tela.blit (fnd, (rel_x, 0))
             x -= 4
-                        
+#Menu de opções do jogo, criado com mensagens
             mensagem("SPACE RUN", largura_tela/2, altura_tela/2-200, 120 )
     
             mensagem("Press enter to play", largura_tela/2, altura_tela/2, 50 )
@@ -264,31 +278,34 @@ def loop():
             mensagem("Press 'ESC' to quit", largura_tela/2, altura_tela/2 + 200, 50)
 
             pressed_keys = pygame.key.get_pressed()
+#Play no jogo
             if pressed_keys[pygame.K_RETURN]:
                 Menu= False
                 Game = True
                 score_hit = 0
+#Vai para o Menu de instruções se a tecla "i" é pressionada
             if pressed_keys[pygame.K_i]:
                 Menu = False
                 Instruction = True
+#Sai do jogo se a tecla "ESC" é pressionada
             if pressed_keys[pygame.K_ESCAPE]:
                 Menu = False
                 Start = False
-                
+#Atuliza a tela de acordo com as intruções acima
             pygame.display.update()
             relogio.tick(FPS)        
-        
+#Menu de Instruções
         while Instruction:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-                
+#Scroll da tela no Menu de instruções
             rel_x = x % fnd.get_rect().width
             tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
             if rel_x < largura_tela:
                 tela.blit (fnd, (rel_x, 0))
             x -= 4               
-                
+#Menu de Instruções em si, feito através de mensagens
             mensagem("INSTRUCTIONS", largura_tela/2, altura_tela/4, 120)
             mensagem("Shoot ----> Space Bar", largura_tela/2, altura_tela/3+50, 50)
             mensagem("Move ----> Arrow Keys", largura_tela/2, altura_tela/2 , 50)
@@ -296,6 +313,8 @@ def loop():
             mensagem("Press 'B' to menu", largura_tela/2, altura_tela/2 + 200, 50)
             
             pressed_keys = pygame.key.get_pressed()
+#Volta para o Menu se a tecla "B" é pressionada
+#Cria-se denovo os elementos do jogo
             if pressed_keys[pygame.K_b]:
                 Instruction = False
                 tudo = pygame.sprite.Group()    
@@ -309,10 +328,10 @@ def loop():
                 tempo_pause = 0
                 score_hit = 0
                 Menu = True
-                
+#Atualiza para a tela as infomações passadas acima
             pygame.display.update()
             relogio.tick(FPS)
-        
+#Jogo em si
         while Game:
                 
             tempo_jogado = time.time()
@@ -322,10 +341,12 @@ def loop():
             if pressed_keys[pygame.K_ESCAPE]:
                 Game = False
                 Start = False
-            
+#Qunado a tecla "P" é pressionada o jogo pausa
             if pressed_keys[pygame.K_p]:
                 comeco_pause = time.time()
                 Pause = True
+#Menu do Pause
+
                 while Pause:
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
@@ -335,18 +356,21 @@ def loop():
                             tempo_pause = tempo_pause + final_pause - comeco_pause
                             Pause = False
                     
-                    
+#Mensagens que formam o Menu de Pause
                     mensagem("PAUSED", largura_tela/2, altura_tela/2-200, 120)
                     mensagem("Press enter to continue", largura_tela/2, altura_tela/2, 50)
                     mensagem("Press 'M' to menu", largura_tela/2, altura_tela/2 + 100, 50)
                     mensagem("Press 'ESC' to quit", largura_tela/2, altura_tela/2 + 200, 50)
                     
                     pressed_keys = pygame.key.get_pressed()
+#Se o enter for pressionado, volta o jogo de onde parou
                     if pressed_keys[pygame.K_RETURN]:                
                         Pause = False
                         Game = True
                         score_final = 0
                         tempo_pause = 0
+# Se a tecla "M" for pressionada, o jogo vai para o Menu
+#Cria-se denovo todos os elementos do jogo                        
                     if pressed_keys[pygame.K_m]:
                         Pause = False
                         Game= False
@@ -361,15 +385,16 @@ def loop():
                         tempo_pause = 0
                         score_hit = 0
                         Menu = True
+#Se o "ESC" for pressionado, sai do jogo
                     if pressed_keys[pygame.K_ESCAPE]:
                         Pause = False
                         Game = False
                         Start = False
                         
-                    
+#Atualiza as informações acima para a tela
                     pygame.display.update()
                     relogio.tick(FPS)   
-                
+#Musica para quando o jogo para
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:            
                     pygame.mixer.music.stop()
@@ -392,7 +417,8 @@ def loop():
                 
             # Verifica se o tiro acertou algum Satélite
             tiros = pygame.sprite.groupcollide(mobs, tiros_group, True, True)
-            
+            #Aumenta a pontuação conforme o satélite é acertado
+            #Animação da explosão quando o satélite explode
             for tiro in tiros:
                 Novo_Satélite(lista_obstaculos, tudo, mobs)
                 expl = Explosion(tiro.rect.center, 'lg')
@@ -400,6 +426,7 @@ def loop():
                 score_hit += 100 - tiro.radius
             
             # Verifica se o Satélite atingiu o player
+            #Aciona game over quando o satélite colide com o player
             hits = pygame.sprite.spritecollide(personagem, mobs, False,pygame.sprite.collide_circle)
             for hit in hits:
                 expl = Explosion(hit.rect.center, 'sm')
@@ -417,12 +444,12 @@ def loop():
             tela.fill(black)
             tela.blit(fnd, (fundo_x, fundo_y))
             mensagem('{0}'.format(score_final), largura_tela/2, altura_tela/2-300, 50)
-            
+    
             tudo.update()
     #Desenhar tudo que está no grupo "tudo" na tela ####        
             tudo.draw(tela)
             pygame.display.flip()#      
-            
+#Menu de Game Over
         while Game_over:
             tudo = pygame.sprite.Group()    
             personagem_group = pygame.sprite.Group()
@@ -433,13 +460,13 @@ def loop():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-                    
+#Scroll da tela
             rel_x = x % fnd.get_rect().width
             tela.blit(fnd, (rel_x -fnd.get_rect().width, 0))
             if rel_x < largura_tela:
                 tela.blit (fnd, (rel_x, 0))
             x -= 4
-            
+#Menu de Game Over em si, feito com mensagens
             mensagem("GAME OVER", largura_tela/2, altura_tela/2-200, 120)
             
             mensagem("Press 'R' to restart", largura_tela/2, altura_tela/2, 50)
@@ -447,7 +474,8 @@ def loop():
             mensagem("Press 'ESC' to quit", largura_tela/2, altura_tela/2 + 200, 50)
                 
             pressed_keys = pygame.key.get_pressed()
-            
+#Quando a tecla "r" é pressionada o jogo recomeça
+#Os elementos do jogo são criados denovo
             if pressed_keys[pygame.K_r]:
                 Game_over = False
                 tudo = pygame.sprite.Group()    
@@ -461,7 +489,8 @@ def loop():
                 comeco = time.time()
                 tempo_pause = 0
                 score_hit = 0
-                
+#Se a tecla "M" for pressionada, volta para o Menu Principal
+#Os elementos são criados denovo
             if pressed_keys[pygame.K_m]:
                 Game_over = False
                 tudo = pygame.sprite.Group()    
@@ -475,10 +504,11 @@ def loop():
                 tempo_pause = 0
                 score_hit = 0
                 Menu = True
+#Se a tecla "ESC" for pressionada, o jogo encerra
             if pressed_keys[pygame.K_ESCAPE]:
                 Game_over = False
                 Start = False
-                
+#Atualiza tudo para tela
             tudo.draw(tela)
             pygame.display.update()
             relogio.tick(FPS)      
@@ -522,11 +552,11 @@ for i in range(8):
     img_sm = pygame.transform.scale(img, (32, 32))
     explosion_anim['sm'].append(img_sm)
     
-#=================  CRIANDO GRUPOS  ========================
 tudo = pygame.sprite.Group()
 
 tiros_group = pygame.sprite.Group()
 
+#============ INÍCIO =============
 loop()
 
 pygame.quit()
