@@ -257,7 +257,7 @@ def loop():
 #Início do jogo
     while Start:
         
-        for i in range(15):
+        for i in range(30):
             Novo_Satélite(lista_obstaculos, tudo, mobs)
 #Jogo começa com o Menu ativado
         while Menu:
